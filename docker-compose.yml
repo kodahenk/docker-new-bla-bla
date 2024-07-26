@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ./docker/apache
+    container_name: mysite-web
+    volumes:
+      - ./mysite.test:/var/www/html
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/html/web
+    depends_on:
+      - db
+
+  db:
+    build:
+      context: ./docker/mysql
+    container_name: mysite-db
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    build:
+      context: ./docker/phpmyadmin
+    container_name: mysite-phpmyadmin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
